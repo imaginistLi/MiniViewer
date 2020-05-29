@@ -36,7 +36,7 @@ class Ui_MiniViewer(QtWidgets.QWidget):
 
     def InitUI(self):
         self.setObjectName("MiniViewer")
-        self.setWindowIcon(QtGui.QIcon('sasuke.jpg'))
+        self.setWindowIcon(QtGui.QIcon('images/sasuke.jpg'))
         self.resize(344, 88)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
