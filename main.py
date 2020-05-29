@@ -94,7 +94,7 @@ class Ui_MiniViewer(QtWidgets.QWidget):
         self.load_labels_bn.setText(_translate("MiniViewer", "load labels"))
 
     def open_img_file(self):
-        dataName, dataType = QFileDialog.getOpenFileName(self, "open images", "./", " *.npy")
+        dataName, dataType = QFileDialog.getOpenFileName(self, "open images", self.data_path, " *.npy")
         if dataName:
             self.data_path = dataName
             print(dataName)
@@ -120,7 +120,7 @@ class Ui_MiniViewer(QtWidgets.QWidget):
 
 
     def open_label_file(self):
-        dataName, dataType = QFileDialog.getOpenFileName(self, "open labels", "./", " *.npy")
+        dataName, dataType = QFileDialog.getOpenFileName(self, "open labels", self.label_path, " *.npy")
         if dataName:
             self.label_path = dataName
             print(dataName)
@@ -133,7 +133,7 @@ class Ui_MiniViewer(QtWidgets.QWidget):
 
     def label_refresh(self):
         temp_image = self.label_data[self.index]
-        img = np.copy(temp_image)
+        img = np.copy(temp_image).astype(np.float)
         img = np.uint8((img - img.min()) / img.ptp() * 255.0)
         myqimage = QtGui.QImage(img, img.shape[1], img.shape[0], QtGui.QImage.Format_Indexed8)
         self.mask_label.setPixmap(QtGui.QPixmap.fromImage(myqimage))
