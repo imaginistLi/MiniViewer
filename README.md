@@ -11,7 +11,7 @@ python main.py
 
 It is very easy to use, as shown in followed Gif
 ![image]( ./images/demo.gif)
-* browse images by your mouse wheelshubiao
+* browse images by your mouse wheel
 
 
 ## Contact
