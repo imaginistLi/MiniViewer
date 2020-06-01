@@ -115,7 +115,7 @@ class Ui_MiniViewer(QtWidgets.QWidget):
             if self.label_data[self.index].sum() != 0:
                 img = draw_contours(img, self.label_data[self.index])
 
-        myqimage = QtGui.QImage(img, img.shape[1], img.shape[0], QtGui.QImage.Format_RGB888)
+        myqimage = QtGui.QImage(img, img.shape[1], img.shape[0], img.strides[0], QtGui.QImage.Format_RGB888)
         self.image_label.setPixmap(QtGui.QPixmap.fromImage(myqimage))
 
 
@@ -135,7 +135,7 @@ class Ui_MiniViewer(QtWidgets.QWidget):
         temp_image = self.label_data[self.index]
         img = np.copy(temp_image).astype(np.float)
         img = np.uint8((img - img.min()) / img.ptp() * 255.0)
-        myqimage = QtGui.QImage(img, img.shape[1], img.shape[0], QtGui.QImage.Format_Indexed8)
+        myqimage = QtGui.QImage(img, img.shape[1], img.shape[0], img.strides[0], QtGui.QImage.Format_Indexed8)
         self.mask_label.setPixmap(QtGui.QPixmap.fromImage(myqimage))
 
 
