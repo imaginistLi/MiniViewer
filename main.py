@@ -100,7 +100,7 @@ class Ui_MiniViewer(QtWidgets.QWidget):
             print(dataName)
             self.index = 0
             self.position.setText('index: %d'% (self.index + 1))
-            self.image_data = np.load(dataName)
+            self.image_data = np.load(dataName, allow_pickle=True)
             print("self.image_data.shape:", self.image_data.shape)
             self.image_load_flag = True
             # show image
@@ -124,7 +124,7 @@ class Ui_MiniViewer(QtWidgets.QWidget):
         if dataName:
             self.label_path = dataName
             print(dataName)
-            self.label_data = np.load(dataName)
+            self.label_data = np.load(dataName, allow_pickle=True)
             print("self.label_data.shape:", self.label_data.shape)
             self.label_load_flag = True
             self.img_refresh()
