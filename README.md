@@ -19,5 +19,5 @@ More features are coming!
 
 For any question, feel free to contact
 ```
-Hao Li : imaginist@sjtu.edu.cn
+imaginist@sjtu.edu.cn
 ```
