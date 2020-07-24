@@ -100,7 +100,7 @@ class Ui_MiniViewer(QtWidgets.QWidget):
             print(dataName)
             self.index = 0
             self.position.setText('index: %d'% (self.index + 1))
-            self.image_data = np.load(dataName, allow_pickle=True)
+            self.image_data = np.load(dataName)
             print("self.image_data.shape:", self.image_data.shape)
             self.image_load_flag = True
             # show image
