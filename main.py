@@ -101,6 +101,7 @@ class Ui_MiniViewer(QtWidgets.QWidget):
             self.index = 0
             self.position.setText('index: %d'% (self.index + 1))
             self.image_data = np.load(dataName)
+            # self.image_data = np.transpose(self.image_data, (2, 1, 0))
             print("self.image_data.shape:", self.image_data.shape)
             self.image_load_flag = True
             # show image
@@ -125,6 +126,7 @@ class Ui_MiniViewer(QtWidgets.QWidget):
             self.label_path = dataName
             print(dataName)
             self.label_data = np.load(dataName, allow_pickle=True)
+            # self.label_data = np.transpose(self.label_data, (2,1,0))
             print("self.label_data.shape:", self.label_data.shape)
             self.label_load_flag = True
             self.img_refresh()
@@ -132,7 +134,7 @@ class Ui_MiniViewer(QtWidgets.QWidget):
             self.label_refresh()
 
     def label_refresh(self):
-        temp_image = self.label_data[self.index]
+        temp_image = self.label_data[self.index].copy()
         img = np.copy(temp_image).astype(np.float)
         img = np.uint8((img - img.min()) / img.ptp() * 255.0)
         myqimage = QtGui.QImage(img, img.shape[1], img.shape[0], img.strides[0], QtGui.QImage.Format_Indexed8)
