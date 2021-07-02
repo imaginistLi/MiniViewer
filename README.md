@@ -13,8 +13,8 @@ It is very easy to use, as shown in followed Gif
 ![image]( ./images/demo.gif)
 * browse images by your mouse wheel
 
-## New Feature Added!
-This new function is used to compare the predicted result with labels, where `preds.npy` is the predicted probability maps.
+
+`contrast.py` is used to compare the predicted result with labels, where `preds.npy` is the predicted probability maps.
 
 Run the new function by:
 ```
@@ -26,7 +26,7 @@ python contrast.py
 
 ## New feature
 
-Now you can open Dicom files directly! (Controbuted by @airsimonhan)
+Now, you can open Dicom files directly! (Controbuted by @airsimonhan)
 
 ## Contact
 More features are coming!
