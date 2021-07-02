@@ -9,11 +9,15 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 import numpy as np
 import cv2
+import os.path as osp
+import os
+import pydicom
+import SimpleITK as sitk
 
 
 def draw_contours(image, label):
     label = label.astype(np.uint8)
-    _, contours, hierarchy = cv2.findContours(label, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(label, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     # image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
     image = cv2.drawContours(image, contours, -1, (255,0,0), 1)
     return image
@@ -86,22 +90,77 @@ class Ui_MiniViewer(QtWidgets.QWidget):
         self.load_images_bn.clicked.connect(self.open_img_file)
         self.load_labels_bn.clicked.connect(self.open_label_file)
 
-
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("MiniViewer", "MiniViewer"))
         self.load_images_bn.setText(_translate("MiniViewer", "load images"))
         self.load_labels_bn.setText(_translate("MiniViewer", "load labels"))
 
+    def dcm2npy(self, dirName, dcm_files, flag):
+        file_list = []
+        array_list = []
+        for dcm_file in dcm_files:
+            dc = pydicom.dcmread(dcm_file, force=True)
+            try:
+                intercept = dc[0x0028, 0x1052].value
+                slope = dc[(0x0028, 0x1053)].value
+            except BaseException:
+                intercept = 0
+                slope = 1
+
+            try:
+                dc.file_meta.TransferSyntaxUID = pydicom.uid.ImplicitVRLittleEndian
+                dc_array = dc.pixel_array
+            except BaseException:
+                ds = sitk.ReadImage(dcm_file)
+                dc_array = sitk.GetArrayFromImage(ds)
+
+            dc_array = np.squeeze(dc_array)
+            dc_array = dc_array * slope + intercept
+            instance = dc.InstanceNumber
+
+            file_list.append(int(instance))
+            array_list.append(dc_array)
+        tmp = list(zip(file_list, array_list))
+        tmp.sort(reverse=False)
+        file_list, array_list = zip(*tmp)
+
+        npy_file = np.array(array_list)
+        if flag == 0:
+            np.save(dirName + '/image.npy', npy_file)
+        elif flag == 1:
+            np.save(dirName + '/label.npy', npy_file)
+        return npy_file
+
     def open_img_file(self):
-        dataName, dataType = QFileDialog.getOpenFileName(self, "open images", self.data_path, " *.npy")
+        dataName, dataType = QFileDialog.getOpenFileName(self, "open images", self.data_path, " *.npy ;; *.dcm")
+
+        if dataType == '*.dcm':
+            dirName = os.path.dirname(dataName)
+            dcm_list = os.listdir(dirName)
+            dcm_files_temp = [osp.join(dirName, dcm) for dcm in dcm_list]
+            dcm_files = []
+            for dcm_file in dcm_files_temp:
+                type_exp = osp.basename(dcm_file).split('.')[-1]
+                if type_exp == 'dcm':
+                    dcm_files.append(dcm_file)
+                else:
+                    pass
+            npy_file = self.dcm2npy(dirName, dcm_files, flag=0)
+
         if dataName:
             self.data_path = dataName
             print(dataName)
             self.index = 0
             self.position.setText('index: %d'% (self.index + 1))
-            self.image_data = np.load(dataName)
-            # self.image_data = np.transpose(self.image_data, (2, 1, 0))
+
+            if dataType == '*.dcm':
+                self.image_data = npy_file
+            elif dataType == '*.npy':
+                self.image_data = np.load(dataName)
+            else:
+                pass
+
             print("self.image_data.shape:", self.image_data.shape)
             self.image_load_flag = True
             # show image
@@ -119,14 +178,33 @@ class Ui_MiniViewer(QtWidgets.QWidget):
         myqimage = QtGui.QImage(img, img.shape[1], img.shape[0], img.strides[0], QtGui.QImage.Format_RGB888)
         self.image_label.setPixmap(QtGui.QPixmap.fromImage(myqimage))
 
-
     def open_label_file(self):
-        dataName, dataType = QFileDialog.getOpenFileName(self, "open labels", self.label_path, " *.npy")
+        dataName, dataType = QFileDialog.getOpenFileName(self, "open labels", self.label_path, " *.npy ;; *.dcm")
+
+        if dataType == '*.dcm':
+            dirName = os.path.dirname(dataName)
+            dcm_list = os.listdir(dirName)
+            dcm_files_temp = [osp.join(dirName, dcm) for dcm in dcm_list]
+            dcm_files = []
+            for dcm_file in dcm_files_temp:
+                type_exp = osp.basename(dcm_file).split('.')[-1]
+                if type_exp == 'dcm':
+                    dcm_files.append(dcm_file)
+                else:
+                    pass
+            npy_file = self.dcm2npy(dirName, dcm_files, flag=1)
+
         if dataName:
             self.label_path = dataName
             print(dataName)
-            self.label_data = np.load(dataName, allow_pickle=True)
-            # self.label_data = np.transpose(self.label_data, (2,1,0))
+
+            if dataType == '*.dcm':
+                self.label_data = npy_file
+            elif dataType == '*.npy':
+                self.label_data = np.load(dataName, allow_pickle=True)
+            else:
+                pass
+
             print("self.label_data.shape:", self.label_data.shape)
             self.label_load_flag = True
             self.img_refresh()
