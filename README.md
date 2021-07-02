@@ -24,6 +24,10 @@ python contrast.py
 
 * The red part represents the manual label, and the green part is the predicted result.
 
+## New feature
+
+Now you can open Dicom files directly! (Controbuted by @airsimonhan)
+
 ## Contact
 More features are coming!
 
