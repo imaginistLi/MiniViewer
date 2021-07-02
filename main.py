@@ -197,12 +197,14 @@ class Ui_MiniViewer(QtWidgets.QWidget):
         if dataName:
             self.label_path = dataName
             print(dataName)
+
             if dataType == '*.dcm':
                 self.label_data = npy_file
             elif dataType == '*.npy':
                 self.label_data = np.load(dataName, allow_pickle=True)
             else:
                 pass
+
             print("self.label_data.shape:", self.label_data.shape)
             self.label_load_flag = True
             self.img_refresh()
@@ -210,7 +212,7 @@ class Ui_MiniViewer(QtWidgets.QWidget):
             self.label_refresh()
 
     def label_refresh(self):
-        temp_image = self.label_data[self.index]
+        temp_image = self.label_data[self.index].copy()
         img = np.copy(temp_image).astype(np.float)
         img = np.uint8((img - img.min()) / img.ptp() * 255.0)
         myqimage = QtGui.QImage(img, img.shape[1], img.shape[0], img.strides[0], QtGui.QImage.Format_Indexed8)
