@@ -26,7 +26,7 @@ python contrast.py
 
 ## New feature
 
-Now, you can open Dicom files directly! (Controbuted by @airsimonhan)
+Now, you can open Dicom files directly! (Contributed by @airsimonhan)
 
 ## Contact
 More features are coming!
