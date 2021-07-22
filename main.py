@@ -12,7 +12,6 @@ import cv2
 import os.path as osp
 import os
 import pydicom
-import SimpleITK as sitk
 
 
 def draw_contours(image, label):
@@ -21,6 +20,7 @@ def draw_contours(image, label):
     # image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
     image = cv2.drawContours(image, contours, -1, (255,0,0), 1)
     return image
+
 
 class Ui_MiniViewer(QtWidgets.QWidget):
     def __init__(self):
@@ -36,7 +36,6 @@ class Ui_MiniViewer(QtWidgets.QWidget):
 
         self.InitUI()
         self.set_signals()
-
 
     def InitUI(self):
         self.setObjectName("MiniViewer")
@@ -97,10 +96,15 @@ class Ui_MiniViewer(QtWidgets.QWidget):
         self.load_labels_bn.setText(_translate("MiniViewer", "load labels"))
 
     def dcm2npy(self, dirName, dcm_files, flag):
+
         file_list = []
         array_list = []
         for dcm_file in dcm_files:
+            if os.path.basename(dcm_file).split('.')[-1] != 'dcm':
+                continue
             dc = pydicom.dcmread(dcm_file, force=True)
+            dc.file_meta.TransferSyntaxUID = pydicom.uid.ImplicitVRLittleEndian
+            dc_array = dc.pixel_array
             try:
                 intercept = dc[0x0028, 0x1052].value
                 slope = dc[(0x0028, 0x1053)].value
@@ -109,11 +113,9 @@ class Ui_MiniViewer(QtWidgets.QWidget):
                 slope = 1
 
             try:
-                dc.file_meta.TransferSyntaxUID = pydicom.uid.ImplicitVRLittleEndian
-                dc_array = dc.pixel_array
-            except BaseException:
-                ds = sitk.ReadImage(dcm_file)
-                dc_array = sitk.GetArrayFromImage(ds)
+                patientID = str(dc[0x0010, 0x0020].value)
+            except:
+                patientID = 'tmp'
 
             dc_array = np.squeeze(dc_array)
             dc_array = dc_array * slope + intercept
@@ -127,9 +129,9 @@ class Ui_MiniViewer(QtWidgets.QWidget):
 
         npy_file = np.array(array_list)
         if flag == 0:
-            np.save(dirName + '/image.npy', npy_file)
+            np.save(dirName + '/' + patientID + '_' + 'image.npy', npy_file)
         elif flag == 1:
-            np.save(dirName + '/label.npy', npy_file)
+            np.save(dirName + '/' + patientID + '_' + 'label.npy', npy_file)
         return npy_file
 
     def open_img_file(self):
