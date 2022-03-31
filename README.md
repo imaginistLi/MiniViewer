@@ -33,5 +33,5 @@ More features are coming!
 
 For any question, feel free to contact
 ```
-imaginist@sjtu.edu.cn
+imaginistLi@gmail.com
 ```
