@@ -31,7 +31,4 @@ Now, you can open Dicom files directly! (Contributed by @airsimonhan)
 ## Contact
 More features are coming!
 
-For any question, feel free to contact
-```
-imaginistLi@gmail.com
-```
+For any question, you can take issues or contact `imaginistLi@gmail.com`
